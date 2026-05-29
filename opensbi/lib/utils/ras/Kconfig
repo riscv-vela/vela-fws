@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: BSD-2-Clause
+
+menu "RAS Agent Driver Support"
+
+config FDT_RAS
+	bool "FDT based RAS drivers"
+	depends on FDT
+	default y
+
+if FDT_RAS
+
+config FDT_RAS_RPMI
+	bool "FDT RPMI RAS driver"
+	default n
+
+config FDT_SBI_RAS_AGENT
+	bool "FDT SBI RAS Agent driver"
+	default y
+
+config FDT_SBI_RAS_AGENT_EINJ
+	bool "Support for APEI Error INJection"
+	depends on FDT_SBI_RAS_AGENT
+	default y
+endif
+
+endmenu

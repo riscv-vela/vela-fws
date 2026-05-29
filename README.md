@@ -1,2 +1,2 @@
-# vela-fsw
+# vela-fws
 q-vela firmware components

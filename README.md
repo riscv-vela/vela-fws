@@ -2,17 +2,12 @@
 
 Firmware components of the [Vela](https://github.com/riscv-vela/vela) project,
 running on the [Q-Vela](https://github.com/riscv-vela/q-vela) emulation
-platform. The Vela patches maintained in `q-vela/patch/` are **already applied**
-here — no manual patching is required.
+platform.
 
 | Subsystem | Contents |
 |-----------|----------|
 | **TEE** (Keystone) | OpenSBI hosting the Rust Security Monitor. Enclave isolation is enforced with **RISC-V WorldGuard** instead of Keystone's original PMP-based scheme. |
 | **RAS** (RERI) | OpenSBI and EDK2 support for the RISC-V Error Record Interface |
-
-Related repositories: [vela-linux](https://github.com/riscv-vela/vela-linux)
-(kernel + Keystone driver), [vela-apps](https://github.com/riscv-vela/vela-apps)
-(SDK, Eyrie runtime, example enclaves).
 
 ---
 

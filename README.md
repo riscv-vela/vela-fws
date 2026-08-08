@@ -1,8 +1,8 @@
 # vela-fws
 
-Firmware components of the [Vela](https://github.com/riscv-vela/vela) project,
+Firmware components of the [riscv-vela](https://github.com/riscv-vela/) project,
 running on the [Q-Vela](https://github.com/riscv-vela/q-vela) emulation
-platform.
+platform, booting [Vela-OS](https://github.com/riscv-vela/vela).
 
 | Subsystem | Contents |
 |-----------|----------|

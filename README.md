@@ -66,7 +66,7 @@ cd ..
 
 | File | Description |
 |------|-------------|
-| `opensbi/build/platform/generic/firmware/fw_jump.bin` | M-mode firmware with the Security Monitor linked in, passed to QEMU via `-bios` |
+| `opensbi/build/platform/generic/firmware/fw_dynamic.bin` | M-mode firmware with the Security Monitor linked in, passed to QEMU via `-bios` |
 
 Launching this firmware requires `-machine virt,wg=on` (WorldGuard) and
 `-semihosting-config enable=on` — the Security Monitor emits its console output
@@ -82,8 +82,7 @@ command.
 RAS flow.
 
 OpenSBI is shared with TEE — build `sm` and `opensbi` first (see above). RAS
-boots `OpenSBI → EDK2 (UEFI) → Linux`, so it uses **`fw_dynamic.bin`** rather
-than `fw_jump.bin`, and needs two artifacts TEE does not: the EDK2 pflash
+boots `OpenSBI → EDK2 (UEFI) → Linux`, so it uses **`fw_dynamic.bin`**, and needs two artifacts TEE does not: the EDK2 pflash
 images and a root filesystem.
 
 ### Prerequisites

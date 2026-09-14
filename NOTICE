@@ -1,0 +1,107 @@
+vela-fws — Third-Party Component Notices
+========================================
+
+vela-fws is a composite work. It combines original code written for the
+riscv-vela project with vendored copies of upstream firmware projects.
+
+Scope of the top-level LICENSE
+------------------------------
+The top-level LICENSE file (BSD-2-Clause-Patent) applies to original work
+authored for this repository, namely:
+
+  * sm/                 (excluding sm/semihosting/, see section 4)
+  * Modifications made by the riscv-vela project to the vendored trees
+    listed below, to the extent those modifications are separable and
+    subject to this project's copyright.
+  * Build scripts, documentation and configuration at the repository root.
+
+Where a component directory carries its own license file, that file governs
+the contents of that directory and takes precedence over the top-level
+LICENSE. Per-file SPDX-License-Identifier tags, where present, are
+authoritative and take precedence over both.
+
+
+1. edk2/
+--------------------------------------------------------------------------
+Component     : EDK II (TianoCore)
+Upstream      : https://github.com/tianocore/edk2
+Form          : Vendored source tree, with support for the RISC-V Error
+                Record Interface (RERI) added by the riscv-vela project
+License       : BSD-2-Clause-Patent
+License text  : edk2/License.txt
+Also see      : edk2/License-History.txt
+
+Notes         : Individual packages and files within this tree may be
+                distributed under different licenses. The per-file
+                SPDX-License-Identifier tag in each source file is
+                authoritative. Original copyright notices in modified files
+                have been retained.
+
+
+2. opensbi/
+--------------------------------------------------------------------------
+Component     : OpenSBI (RISC-V Supervisor Binary Interface, M-mode firmware)
+Upstream      : https://github.com/riscv-software-src/opensbi
+Form          : Vendored source tree, with the Vela TEE and RERI patches
+                applied by the riscv-vela project
+License       : BSD-2-Clause
+License text  : opensbi/COPYING.BSD
+Also see      : opensbi/ThirdPartyNotices.md
+
+Notes         : Modifications made by the riscv-vela project to files in
+                this tree are contributed under BSD-2-Clause, so that the
+                tree remains uniformly licensed with upstream. Original
+                copyright notices and SPDX tags in modified files have been
+                retained.
+
+
+3. sm/
+--------------------------------------------------------------------------
+Component     : Vela Security Monitor (Rust), built as libvela.a and linked
+                into OpenSBI
+Author        : Electronics and Telecommunications Research Institute (ETRI)
+License       : BSD-2-Clause-Patent
+License text  : sm/LICENSE
+
+Notes         : Enclave isolation is enforced using RISC-V WorldGuard rather
+                than the PMP-based scheme used by the Keystone project.
+
+
+4. sm/semihosting/
+--------------------------------------------------------------------------
+Component     : semihosting (Rust crate)
+Form          : Vendored copy, consumed as a Cargo path dependency
+License       : Apache-2.0 OR MIT (dual-licensed; a recipient may choose
+                either license)
+License text  : sm/semihosting/LICENSE-APACHE
+                sm/semihosting/LICENSE-MIT
+
+Notes         : This directory is third-party code and is NOT covered by the
+                top-level LICENSE.
+
+
+5. buildroot/
+--------------------------------------------------------------------------
+Component     : Buildroot (root filesystem builder)
+Upstream      : https://github.com/buildroot/buildroot
+Form          : Git submodule. No Buildroot source code is contained in or
+                redistributed by this repository.
+License       : GNU General Public License, version 2 or later, with
+                exceptions stated in the Buildroot COPYING file
+
+Notes         : The Buildroot license covers the Buildroot build system
+                itself. Some files within Buildroot carry different license
+                statements, and patch files bundled by Buildroot are covered
+                by the license of the software they are applied to.
+
+                Packages that Buildroot downloads and builds retain their own
+                upstream licenses. Anyone redistributing a root filesystem
+                image produced with Buildroot is responsible for collecting
+                and shipping the license information for that image; Buildroot
+                provides `make legal-info` for this purpose.
+
+
+Reporting
+--------------------------------------------------------------------------
+If you believe a component is listed incorrectly, or a notice is missing,
+please open an issue at https://github.com/riscv-vela/vela-fws/issues

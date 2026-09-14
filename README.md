@@ -23,6 +23,24 @@ vela-fws/
 
 ---
 
+## License
+
+vela-fws is a composite work. Original code authored for this project is
+licensed under **BSD-2-Clause-Patent** (see `LICENSE`). Vendored upstream
+components keep their own licenses in place:
+
+| Path | Origin | License |
+| ---- | ------ | ------- |
+| `sm/` | riscv-vela (ETRI) | BSD-2-Clause-Patent |
+| `sm/semihosting/` | `semihosting` crate | Apache-2.0 OR MIT |
+| `opensbi/` | OpenSBI | BSD-2-Clause |
+| `edk2/` | EDK II (TianoCore) | BSD-2-Clause-Patent |
+| `buildroot/` | Buildroot (submodule) | GPL-2.0-or-later |
+
+See `NOTICE` for the full component notices. Per-file
+`SPDX-License-Identifier` tags, where present, take precedence.
+
+
 ## TEE — Building OpenSBI + Security Monitor
 
 ### Prerequisites

@@ -478,6 +478,17 @@ pub fn add_region_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
     set_wg(region_idx)
 }
 
+/// Replaces the worlds allowed on a region, in both the software record and
+/// the checker.
+pub fn set_region_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
+    if !is_wg_region_valid(region_idx) {
+        return Err(Error::Invalid);
+    }
+
+    unsafe { REGIONS[region_idx].as_mut().unwrap().perm = perm };
+    set_wg(region_idx)
+}
+
 pub fn reset_wg(region_idx: usize) -> Result<(), Error> {
     if !is_wg_region_valid(region_idx) {
         return Err(Error::Invalid);

@@ -102,4 +102,16 @@ impl RegionPermConfig {
         }
         false
     }
+
+    /// Drops every grant made to `eid`. Returns whether there was one.
+    pub fn remove_perm(&mut self, eid: usize) -> bool {
+        let mut removed = false;
+        for slot in self.conf_list.iter_mut() {
+            if matches!(slot, Some(cfg) if cfg.eid == eid) {
+                *slot = None;
+                removed = true;
+            }
+        }
+        removed
+    }
 }

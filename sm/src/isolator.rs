@@ -268,3 +268,16 @@ pub fn scrub_region(region_idx: usize, paddr: usize, size: usize) -> Result<(), 
     }
     Ok(())
 }
+
+/// Sets the worlds allowed on a region, as 2 bits (R, W) per world.
+pub fn set_region_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
+    #[cfg(feature = "isolator_wg")]
+    {
+        wg::set_region_perm(region_idx, perm)
+    }
+    #[cfg(not(feature = "isolator_wg"))]
+    {
+        let _ = (region_idx, perm);
+        Ok(())
+    }
+}

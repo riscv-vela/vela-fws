@@ -281,3 +281,16 @@ pub fn set_region_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
         Ok(())
     }
 }
+
+/// Makes S/U-mode accesses on this hart carry the enclave's world.
+pub fn enter_world(eid: usize) {
+    #[cfg(feature = "isolator_wg")]
+    csr_write_custom!(0x390, eid); // mlwid
+    let _ = eid;
+}
+
+/// Makes S/U-mode accesses on this hart carry the OS world again.
+pub fn exit_world() {
+    #[cfg(feature = "isolator_wg")]
+    csr_write_custom!(0x390, wg::OS_WID); // mlwid
+}

@@ -405,8 +405,12 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
                 {
                     continue;
                 }
-                //1.a Clear all pages
                 let rid = region.id;
+
+                //1.a Clear all pages
+                if region.r_type == RegionType::RegionEPM {
+                    isolator::scrub_region(rid, region.paddr, region.size)?;
+                }
 
                 //1.b free pmp/wg region
                 let _ = isolator::set_isolator(rid, true);

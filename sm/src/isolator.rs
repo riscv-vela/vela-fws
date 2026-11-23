@@ -248,3 +248,23 @@ pub fn update() -> Result<(), Error> {
         Ok(())
     }
 }
+
+/// Zeroes a region before the SM releases it. The SM runs as the trusted
+/// world, which an enclave's own rule does not grant, so it is granted first.
+pub fn scrub_region(region_idx: usize, paddr: usize, size: usize) -> Result<(), Error> {
+    #[cfg(feature = "isolator_wg")]
+    wg::add_region_perm(region_idx, 3 << (wg::TRUSTED_WID * 2))?;
+    let _ = region_idx;
+
+    // Volatile so the loop is not turned into a memset call, which the
+    // firmware link does not provide.
+    let mut p = paddr as *mut u64;
+    let end = (paddr + size) as *mut u64;
+    while p < end {
+        unsafe {
+            p.write_volatile(0);
+            p = p.add(1);
+        }
+    }
+    Ok(())
+}

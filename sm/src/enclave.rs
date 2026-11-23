@@ -413,6 +413,18 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
             }
         }
 
+        // Drop the grants this enclave was given, or the next enclave to get
+        // this eid would inherit them.
+        for i in 0..MAX_SHARED_REGIONS {
+            if let Some(region) = get_shm_region_by_idx(i) {
+                if region.r_type != RegionType::RegionInvalid
+                    && region.perm_conf.remove_perm(eid)
+                {
+                    let _ = apply_shm_grants(region);
+                }
+            }
+        }
+
         // 1. clear all the data in the enclave pages
         // requires no lock (single runner)
         for i in 0..MAX_ENCLAVE_REGIONS {
@@ -716,6 +728,7 @@ pub fn share_shm_region(rid: usize, eid2share: usize, st_perm: shm::Perm) -> Res
                 dbg!("[share_shm_region] conf_list is full");
                 return Err(Error::Invalid);
             }
+            apply_shm_grants(region)?;
         } else {
             dbg!(
                 "[share_shm_region] eid {} is not owner of rid {}",
@@ -730,6 +743,19 @@ pub fn share_shm_region(rid: usize, eid2share: usize, st_perm: shm::Perm) -> Res
     }
     display();
     Ok(())
+}
+
+/// Programs a shared region's rule with the static grants its owner made,
+/// one world per enclave. The host needs no bits: the OS rule already covers
+/// the region.
+fn apply_shm_grants(region: &Region) -> Result<(), Error> {
+    let mut perm: u64 = 0;
+    for conf in region.perm_conf.conf_list.iter().flatten() {
+        if isolator::ENCLAVE_IDS.contains(&conf.eid) {
+            perm |= ((conf.st_perm.bits() & 0x3) as u64) << (conf.eid * 2);
+        }
+    }
+    isolator::set_region_perm(region.id, perm)
 }
 
 pub fn get_shm_region_by_rid(rid: usize) -> Option<&'static mut Region> {

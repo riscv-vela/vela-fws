@@ -318,19 +318,36 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             (1 << crate::encoding::MSTATUS_MPP_SHIFT) | crate::encoding::MSTATUS_FS,
         ));
 
-        // Temporarily disabled for new shared memory model
-        //if let Ok(region) = isolator::region_init(
-        //    create_args.utm_region.paddr,
-        //    create_args.utm_region.size,
-        //    enclave.id(),
-        //    false,
-        //) {
-        //    enclave.regions[1] = Some(Region {
-        //        id: region,
-        //        r_type: RegionType::RegionUTM,
-        //    });
-        //    return Ok(enclave);
-        //}
+        // The UTM lies in OS memory, whose rule grants only the OS world, so
+        // the enclave needs a rule of its own to reach it. switch_to_enclave
+        // installs it and switch_to_host takes it down.
+        match isolator::region_init(
+            create_args.utm_region.paddr,
+            create_args.utm_region.size,
+            enclave.id(),
+            false,
+        ) {
+            Ok(region) => {
+                enclave.regions[1] = Some(Region {
+                    id: region,
+                    r_type: RegionType::RegionUTM,
+                    paddr: create_args.utm_region.paddr,
+                    size: create_args.utm_region.size,
+                    perm_conf: shm::RegionPermConfig {
+                        owner_id: enclave.id(),
+                        conf_list: [None; MAX_ENCLAVES],
+                    },
+                });
+            }
+            Err(err) => {
+                let eid = enclave.id();
+                let epm = enclave.regions[0].take().unwrap().id;
+                let _ = isolator::set_isolator(epm, true);
+                let _ = isolator::region_free(epm);
+                let _ = Enclave::free(eid);
+                return Err(err);
+            }
+        }
 
         // An example use of shared memory
         //let rid = match create_shared_mem(
@@ -400,14 +417,12 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         // requires no lock (single runner)
         for i in 0..MAX_ENCLAVE_REGIONS {
             if let Some(region) = &enclave.regions[i] {
-                if region.r_type == RegionType::RegionInvalid
-                    || region.r_type == RegionType::RegionUTM
-                {
+                if region.r_type == RegionType::RegionInvalid {
                     continue;
                 }
                 let rid = region.id;
 
-                //1.a Clear all pages
+                //1.a Clear all pages. The UTM is the OS's memory; leave it.
                 if region.r_type == RegionType::RegionEPM {
                     isolator::scrub_region(rid, region.paddr, region.size)?;
                 }

@@ -198,6 +198,7 @@ impl Enclave {
         });
 
         // Setup any platform specific defenses
+        isolator::enter_world(self.eid);
         cpu::enter_enclave_context(self.eid);
 
     }
@@ -257,6 +258,7 @@ impl Enclave {
             csr_set!(mip, MIP_SEIP);
         }
 
+        isolator::exit_world();
         cpu::exit_enclave_context();
     }
 }

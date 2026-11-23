@@ -4,6 +4,7 @@ use crate::pmp;
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
 use crate::wg;
 use crate::{Error, OnceCell};
+use core::ops::Range;
 use core::sync::atomic::compiler_fence;
 use core::sync::atomic::Ordering;
 
@@ -14,6 +15,14 @@ pub const OSM_BASE: usize = SMM_BASE + SMM_SIZE;
 unsafe impl<T> Sync for OnceCell<T> {}
 
 pub const PAGE_SIZE: usize = 4096;
+
+/// Enclave IDs the SM hands out. With WorldGuard the eid is also the world the
+/// enclave runs in, so it must avoid world 0 (granted on all OS memory),
+/// OS_WID and TRUSTED_WID.
+#[cfg(feature = "isolator_wg")]
+pub const ENCLAVE_IDS: Range<usize> = 1..(wg::OS_WID as usize);
+#[cfg(not(feature = "isolator_wg"))]
+pub const ENCLAVE_IDS: Range<usize> = 0..enclave::MAX_ENCLAVES;
 
 static SM_INIT_DONE: OnceCell<bool> = OnceCell::new();
 static SM_REGION_ID: OnceCell<usize> = OnceCell::new();

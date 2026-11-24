@@ -239,10 +239,14 @@ pub fn update() -> Result<(), Error> {
     }
     #[cfg(feature = "isolator_wg")]
     {
+        // Every hart, not just the cold-boot one: mlwid resets to the
+        // trusted world, which would leave the OS running as the SM.
+        csr_write_custom!(0x390, wg::OS_WID); // mlwid
         Ok(())
     }
     #[cfg(feature = "isolator_hybrid")]
     {
+        csr_write_custom!(0x390, wg::OS_WID); // mlwid
         pmp::reset(pmp::PMP_N_REG);
         pmp::set_pmp(os_region_id(), pmp::PMP_ALL_PERM, false)?;
         Ok(())
